@@ -2,53 +2,63 @@
 
 namespace Thunbolt\Application;
 
-use Nette, Kdyby, Doctrine, WebChemistry;
+use Kdyby\Doctrine\EntityManager;
+use Kdyby\Translation\LocaleResolver\SessionResolver;
+use Kdyby\Translation\Translator;
+use Nette\Application\ForbiddenRequestException;
 use Thunbolt\Application\ShortCuts\TPresenter;
+use Thunbolt\User\User;
+use WebChemistry\Forms\Form;
+use WebChemistry\Forms\Traits\TSuggestion;
+use WebChemistry\Parameters;
+use Nette\Application\UI;
+use WebChemistry\Utils\Strings;
+use WebChemistry\Widgets;
+use WebChemistry\Application\IExtendPresenter;
 
 /**
- * @property-read WebChemistry\User\User $user
+ * @property-read User $user
  * @property-read array $names
- * @property-read WebChemistry\Parameters\Provider $settings
  */
-abstract class Presenter extends Nette\Application\UI\Presenter {
+abstract class Presenter extends UI\Presenter {
 
-	use WebChemistry\Forms\Traits\TSuggestion;
+	use TSuggestion;
 	use TPresenter;
 
-	/** @var Kdyby\Doctrine\EntityManager @inject */
+	/** @var EntityManager @inject */
 	public $em;
 
 	/** @var array */
 	private $names = [];
 
-	/** @var Kdyby\Translation\Translator */
+	/** @var Translator */
 	protected $translator;
 
-	/** @var Kdyby\Translation\LocaleResolver\SessionResolver */
+	/** @var SessionResolver */
 	private $translatorSession;
 
-	/** @var WebChemistry\Parameters\Provider */
-	private $parametersProvider;
+	/** @var Parameters\Provider */
+	protected $settings;
 
-	/** @var WebChemistry\Widgets\Manager */
+	/** @var Widgets\Manager */
 	private $widgets;
 
 	/**
-	 * @return WebChemistry\Widgets\Manager
+	 * @return Widgets\Manager
 	 */
 	public function getWidgets() {
 		return $this->widgets ? $this->getComponent('widgets') : NULL;
 	}
 
 	/**
-	 * @return WebChemistry\Widgets\Manager
+	 * @return Widgets\Manager
 	 */
 	protected function createComponentWidgets() {
 		return $this->widgets;
 	}
 
 	/**
-	 * @return Nette\Application\UI\ITemplate
+	 * @return UI\ITemplate
 	 */
 	protected function createTemplate() {
 		$template = parent::createTemplate();
@@ -78,33 +88,26 @@ abstract class Presenter extends Nette\Application\UI\Presenter {
 	/************************* Injectors **************************/
 
 	/**
-	 * @param WebChemistry\Widgets\Factory $factory
+	 * @param Widgets\Factory $factory
 	 */
-	public function injectWidgets(WebChemistry\Widgets\Factory $factory = NULL) {
+	public function injectWidgets(Widgets\Factory $factory = NULL) {
 		$this->widgets = $factory ? $factory->create() : NULL;
 	}
 
 	/**
-	 * @param WebChemistry\Parameters\Provider $parametersProvider
+	 * @param Parameters\Provider $parametersProvider
 	 */
-	public function injectProviders(WebChemistry\Parameters\Provider $parametersProvider) {
-		$this->parametersProvider = $parametersProvider;
+	public function injectProviders(Parameters\Provider $parametersProvider) {
+		$this->settings = $parametersProvider;
 	}
 
 	/**
-	 * @param Kdyby\Translation\Translator $translator
-	 * @param Kdyby\Translation\LocaleResolver\SessionResolver $sessionResolver
+	 * @param Translator $translator
+	 * @param SessionResolver $sessionResolver
 	 */
-	public function injectTranslator(Kdyby\Translation\Translator $translator = NULL, Kdyby\Translation\LocaleResolver\SessionResolver $sessionResolver = NULL) {
+	public function injectTranslator(Translator $translator = NULL, SessionResolver $sessionResolver = NULL) {
 		$this->translator = $translator;
 		$this->translatorSession = $sessionResolver;
-	}
-
-	/**
-	 * @return WebChemistry\Parameters\Provider
-	 */
-	public function getSettings() {
-		return $this->parametersProvider;
 	}
 
 	/**
@@ -163,8 +166,8 @@ abstract class Presenter extends Nette\Application\UI\Presenter {
 		$redirect = FALSE;
 
 		foreach ($values as $name => $value) {
-			if (!isset($parameters[$name]) || $parameters[$name] !== Nette\Utils\Strings::webalize($value)) {
-				$parameters[$name] = Nette\Utils\Strings::webalize($value);
+			if (!isset($parameters[$name]) || $parameters[$name] !== Strings::webalize($value)) {
+				$parameters[$name] = Strings::webalize($value);
 				$redirect = TRUE;
 			}
 		}
@@ -177,8 +180,8 @@ abstract class Presenter extends Nette\Application\UI\Presenter {
 	/************************* Rewrite parent methods **************************/
 
 	/**
-	 * @param Nette\Application\UI\PresenterComponentReflection $element
-	 * @throws Nette\Application\ForbiddenRequestException
+	 * @param UI\PresenterComponentReflection $element
+	 * @throws ForbiddenRequestException
 	 */
 	public function checkRequirements($element) {
 		$user = (array) $element->getAnnotation('user');
@@ -217,7 +220,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter {
 		$paths = [
 			"$dir/templates/$presenter/$this->view.latte"
 		];
-		if ($this instanceof IExpand) {
+		if ($this instanceof IExtendPresenter) {
 			$dir = dirname((new \ReflectionClass(get_parent_class($this)))->getFileName());
 			$paths[] = "$dir/templates/$presenter/$this->view.latte";
 		}
@@ -246,9 +249,9 @@ abstract class Presenter extends Nette\Application\UI\Presenter {
 	}
 
 	/**
-	 * @param \WebChemistry\Forms\Form $form
+	 * @param Form $form
 	 */
-	public function errorForm(WebChemistry\Forms\Form $form) {
+	public function errorFormToFlash(Form $form) {
 		foreach ($form->getOwnErrors() as $error) {
 			$this->flashMessage($error, 'error');
 		}
