@@ -124,11 +124,13 @@ abstract class Presenter extends UI\Presenter {
 
 	/************************* Redirects **************************/
 
-	public function redirectRestore($backLink, $code, $destination = NULL, $args = array()) {
-		$this->restoreRequest($backLink);
-		$args = func_get_args();
+	public function redirectRestore($code, $destination = NULL, $args = array()) {
+		if ($backlink = $this->getParameter('backlink')) {
+			$this->restoreRequest($backlink);
+		}
 
-		call_user_func_array(array($this, 'redirect'), array_slice($args, 1));
+		call_user_func_array([$this, 'redirect'], func_get_args());
+
 	}
 
 	public function redirectStore($code, $destination = NULL, $args = array()) {
