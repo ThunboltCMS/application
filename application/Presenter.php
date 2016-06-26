@@ -97,7 +97,7 @@ abstract class Presenter extends UI\Presenter {
 	/**
 	 * @param Parameters\Provider $parametersProvider
 	 */
-	public function injectProviders(Parameters\Provider $parametersProvider) {
+	public function injectProviders(Parameters\Provider $parametersProvider = NULL) {
 		$this->settings = $parametersProvider;
 	}
 
