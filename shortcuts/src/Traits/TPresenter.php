@@ -18,7 +18,7 @@ trait TPresenter {
 
 	protected function createRequest($component, $destination, array $args, $mode) {
 		if (!$this->shortDestinations) {
-			return parent::createRequest($component, $destination, $args, $mode)
+			return parent::createRequest($component, $destination, $args, $mode);
 		}
 		$pos = strrpos($this->getName(), ':');
 		$presenter = substr($this->getName(), $pos === FALSE ? 0 : $pos + 1);
