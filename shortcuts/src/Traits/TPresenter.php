@@ -10,11 +10,16 @@ trait TPresenter {
 	/**
 	 * @param ShortCuts $shortCuts
 	 */
-	public function injectShortDestinations(ShortCuts $shortCuts) {
-		$this->shortDestinations = $shortCuts->getShortcuts();
+	public function injectShortDestinations(ShortCuts $shortCuts = NULL) {
+		if ($shortCuts) {
+			$this->shortDestinations = $shortCuts->getShortcuts();
+		}
 	}
 
 	protected function createRequest($component, $destination, array $args, $mode) {
+		if (!$this->shortDestinations) {
+			return parent::createRequest($component, $destination, $args, $mode)
+		}
 		$pos = strrpos($this->getName(), ':');
 		$presenter = substr($this->getName(), $pos === FALSE ? 0 : $pos + 1);
 		// Short tags
