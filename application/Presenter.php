@@ -230,11 +230,14 @@ abstract class Presenter extends UI\Presenter {
 		return $paths;
 	}
 
-	public function findLayoutTemplateFile() {
+	public function formatLayoutTemplateFiles() {
+		if (preg_match('#/|\\\\#', $this->getLayout())) {
+			return [$this->getLayout()];
+		}
 		$names = $this->getNames();
 		$module = $names['module'];
 		$presenter = $names['presenter'];
-		$layout = $this->layout ? $this->layout : strtolower($module);
+		$layout = $this->getLayout() ? $this->getLayout() : strtolower($module);
 		$presenterDir = dirname($this->getReflection()->getFileName());
 		$dir = $this->context->parameters['appDir'] . '/layouts';
 		$list = [
@@ -243,11 +246,7 @@ abstract class Presenter extends UI\Presenter {
 		];
 		$list[] = "$dir/@$layout.latte";
 
-		foreach ($list as $file) {
-			if (file_exists($file)) {
-				return $file;
-			}
-		}
+		return $list;
 	}
 
 	/**
