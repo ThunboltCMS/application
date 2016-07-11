@@ -140,6 +140,10 @@ abstract class Presenter extends UI\Presenter {
 			$args['backlink'] = $this->storeRequest();
 		}
 
+		if (func_num_args() < 3) {
+			$this->redirect($code, $destination);
+		}
+
 		$this->redirect($code, $destination, $args);
 	}
 
