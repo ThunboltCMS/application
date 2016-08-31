@@ -1,9 +1,19 @@
 {
 	"name": "thunbolt/application",
 	"type": "library",
+	"require": {
+		"nette/application": "^2.3",
+		"nette/di": "^2.3"
+	},
+	"require-dev": {
+		"codeception/codeception": "^2.2",
+		"webchemistry/testing-helpers": "dev-master"
+	},
 	"autoload": {
+		"psr-4": {
+			"Thunbolt\\Application\\": "application/"
+		},
 		"classmap": [
-			"application/",
 			"shortcuts"
 		]
 	}
