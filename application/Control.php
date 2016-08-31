@@ -10,12 +10,12 @@ class Control extends \Nette\Application\UI\Control {
 	 * @param array $args
 	 */
 	public function redraw($snippets = NULL, $link = 'this', $args = []) {
-		if ($this->presenter->isAjax()) {
+		if ($this->getPresenter()->isAjax()) {
 			foreach ((array) $snippets as $snippet) {
 				$this->redrawControl($snippet);
 			}
 		} else {
-			$this->presenter->redirect($link, $args);
+			$this->getPresenter()->redirect($link, $args);
 		}
 	}
 

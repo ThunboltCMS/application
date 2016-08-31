@@ -9,18 +9,19 @@ use Nette\Application\ForbiddenRequestException;
 use Thunbolt\Application\ShortCuts\TPresenter;
 use Thunbolt\User\User;
 use WebChemistry\Forms\Form;
+use WebChemistry\Forms\Traits\TSuggestion;
 use WebChemistry\Parameters;
 use Nette\Application\UI;
 use WebChemistry\Utils\Strings;
 use WebChemistry\Widgets;
-use WebChemistry\Application\IExtendPresenter;
 
 /**
  * @property-read User $user
- * @property-read array $names
+ * @property-read array $names Lazy
  */
 abstract class Presenter extends UI\Presenter {
 
+	use TSuggestion;
 	use TPresenter;
 
 	/** @var EntityManager @inject */
@@ -40,6 +41,20 @@ abstract class Presenter extends UI\Presenter {
 
 	/** @var Widgets\Manager */
 	private $widgets;
+
+	/** @var string */
+	private $presenterDir;
+
+	/**
+	 * @return string
+	 */
+	public function getPresenterDir() {
+		if (!$this->presenterDir) {
+			$this->presenterDir = dirname($this->getReflection()->getFileName());
+		}
+
+		return $this->presenterDir;
+	}
 
 	/**
 	 * @return Widgets\Manager
@@ -220,14 +235,10 @@ abstract class Presenter extends UI\Presenter {
 	public function formatTemplateFiles() {
 		$name = $this->getName();
 		$presenter = substr($name, strrpos(':' . $name, ':'));
-		$dir = dirname($this->getReflection()->getFileName());
+		$dir = $this->getPresenterDir();
 		$paths = [
-			"$dir/templates/$presenter/$this->view.latte"
+			"$dir/../Resources/templates/$presenter/$this->view.latte"
 		];
-		if ($this instanceof IExtendPresenter) {
-			$dir = dirname((new \ReflectionClass(get_parent_class($this)))->getFileName());
-			$paths[] = "$dir/templates/$presenter/$this->view.latte";
-		}
 
 		return $paths;
 	}
@@ -240,8 +251,8 @@ abstract class Presenter extends UI\Presenter {
 		$module = $names['module'];
 		$presenter = $names['presenter'];
 		$layout = $this->getLayout() ? $this->getLayout() : strtolower($module);
-		$presenterDir = dirname($this->getReflection()->getFileName());
-		$dir = $this->context->parameters['appDir'] . '/layouts';
+		$presenterDir = $this->getPresenterDir();
+		$dir = $this->getContext()->parameters['appDir'] . '/layouts';
 		$list = [
 			"$presenterDir/templates/@layout.latte",
 			"$presenterDir/templates/$presenter/@layout.latte",
