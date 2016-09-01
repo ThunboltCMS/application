@@ -168,12 +168,12 @@ abstract class Presenter extends UI\Presenter {
 	 * @param array $args
 	 */
 	public function redraw($snippets = NULL, $link = 'this', $args = []) {
-		if ($this->presenter->isAjax()) {
+		if ($this->getPresenter()->isAjax()) {
 			foreach ((array) $snippets as $snippet) {
 				$this->redrawControl($snippet);
 			}
 		} else {
-			$this->presenter->redirect($link, $args);
+			$this->getPresenter()->redirect($link, $args);
 		}
 	}
 
@@ -221,7 +221,7 @@ abstract class Presenter extends UI\Presenter {
 		$isAllowed = (array) $element->getAnnotation('isAllowed');
 
 		foreach ($isAllowed as $road) {
-			if (!$this->user->isAllowed($road)) {
+			if (!$this->getUser()->isAllowed($road)) {
 				$module = substr($this->getName(), 0, strpos($this->getName(), ':'));
 				$this->flashMessage('core.requirements.isAllowed', 'error');
 				$this->redirect('home.' . strtolower($module));
@@ -237,7 +237,7 @@ abstract class Presenter extends UI\Presenter {
 		$presenter = substr($name, strrpos(':' . $name, ':'));
 		$dir = $this->getPresenterDir();
 		$paths = [
-			"$dir/../Resources/templates/$presenter/$this->view.latte"
+			"$dir/../Resources/templates/$presenter/{$this->getView()}.latte"
 		];
 
 		return $paths;
@@ -252,12 +252,11 @@ abstract class Presenter extends UI\Presenter {
 		$presenter = $names['presenter'];
 		$layout = $this->getLayout() ? $this->getLayout() : strtolower($module);
 		$presenterDir = $this->getPresenterDir();
-		$dir = $this->getContext()->parameters['appDir'] . '/layouts';
 		$list = [
 			"$presenterDir/templates/@layout.latte",
 			"$presenterDir/templates/$presenter/@layout.latte",
 		];
-		$list[] = "$dir/@$layout.latte";
+		$list[] = $this->getContext()->parameters['layoutsDir']. "/@$layout.latte";
 
 		return $list;
 	}
