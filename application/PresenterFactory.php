@@ -19,15 +19,13 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 
 	/**
 	 * @param callable $factory function (string $class): IPresenter
+	 * @param array $mapping
 	 */
-	public function __construct(callable $factory = NULL) {
+	public function __construct(callable $factory = NULL, array $mapping = []) {
 		$this->factory = $factory ?: function ($class) {
 			return new $class;
 		};
-		$this->mapping = [
-			'Front' => new DefaultPresenterMapping('Front'),
-			'Admin' => new DefaultPresenterMapping('Admin'),
-		];
+		$this->setMapping($mapping);
 	}
 
 	/**
@@ -81,23 +79,24 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 	}
 
 	/**
-	 * Sets mapping as pairs [module => mask]
-	 * @param string $module
-	 * @param string|IPresenterMapping $mapping
+	 * Sets mapping as pairs [module => IPresenterMapping]
+	 * @param array $mapping
 	 * @throws PresenterFactoryException
 	 */
-	public function setMapping($module, $mapping) {
-		if (!is_object($mapping)) {
-			$mapping = new $mapping;
-		}
-		if ($mapping instanceof IPresenterMapping) {
-			throw PresenterFactoryException::invalidMapping($mapping);
-		}
-		if (!preg_match('#^[A-Z][a-z]+$#', $module)) {
-			throw new PresenterFactoryException("Module '$module' is not valid.");
-		}
+	public function setMapping(array $mapping) {
+		foreach ($mapping as $module => $object) {
+			if (!is_object($object)) {
+				throw new PresenterFactoryException("Module '$module' must have object as mapping.");
+			}
+			if (!$object instanceof IPresenterMapping) {
+				throw PresenterFactoryException::invalidMapping($object);
+			}
+			if (!preg_match('#^[A-Z][a-z]+$#', $module)) {
+				throw new PresenterFactoryException("Module name '$module' is not valid.");
+			}
 
-		$this->mapping[$module] = $mapping;
+			$this->mapping[$module] = $object;
+		}
 	}
 
 	/**

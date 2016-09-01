@@ -2,13 +2,13 @@
 
 namespace Thunbolt\Application;
 
-class DefaultPresenterMapping implements IPresenterMapping {
+class PresenterMapping implements IPresenterMapping {
 
 	/** @var string */
-	private static $classRegex = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
+	protected static $classRegex = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
 
 	/** @var string */
-	private $module;
+	protected $module;
 
 	/**
 	 * @param string $module
@@ -22,10 +22,6 @@ class DefaultPresenterMapping implements IPresenterMapping {
 	 * @return string
 	 */
 	public function format(array $parts) {
-		// Front:Homepage
-		if (count($parts) === 1) {
-			return "AppBundle\\{$this->module}Module\\$parts[0]Presenter";
-		}
 		// Front:Shop:Homepage
 		return "$parts[0]Bundle\\{$this->module}Module\\$parts[1]Presenter";
 	}
@@ -35,12 +31,6 @@ class DefaultPresenterMapping implements IPresenterMapping {
 	 * @return string|null
 	 */
 	public function unformat($class) {
-		// AppBundle\FrontModule\*Presenter => Front:Homepage
-		if (substr($class, 0, 10) === 'AppBundle\\') {
-			if (preg_match('#' . $this->module . 'Module\\\\(' . self::$classRegex . ')Presenter$#', $class, $matches)) {
-				return $this->module . ':' . $matches[1];
-			}
-		}
 		// ShopBundle\FrontModule\BasketPresenter => Shop:Front:Basket
 		if (preg_match('#^(' . self::$classRegex . ')Bundle\\\\' . $this->module . 'Module\\\\(' . self::$classRegex . ')Presenter$#', $class , $matches)) {
 			return $this->module . ':' . $matches[1] . ':' . $matches[2];
