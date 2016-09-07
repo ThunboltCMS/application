@@ -3,7 +3,7 @@
 namespace Thunbolt\Application;
 
 use Nette;
-use Thunbolt\Application\Bridges\Nette\PresenterMapping;
+use Thunbolt\Application\Bridges;
 
 class PresenterFactory implements Nette\Application\IPresenterFactory {
 
@@ -91,7 +91,7 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 					throw new PresenterFactoryException("Invalid mapping mask '$object'.");
 				}
 
-				$object = new PresenterMapping($module, [$m[1], $m[2] ?: '*Module\\', $m[3]]);
+				$object = new Bridges\Nette\PresenterMapping($module, [$m[1], $m[2] ?: '*Module\\', $m[3]]);
 			}
 			if (!is_object($object)) {
 				throw new PresenterFactoryException("Module '$module' must have object as mapping.");
