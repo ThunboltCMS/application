@@ -3,6 +3,7 @@
 namespace Thunbolt\Application;
 
 use Nette;
+use Thunbolt\Application\Bridges\Nette\PresenterMapping;
 
 class PresenterFactory implements Nette\Application\IPresenterFactory {
 
@@ -85,6 +86,13 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 	 */
 	public function setMapping(array $mapping) {
 		foreach ($mapping as $module => $object) {
+			if (is_string($object)) { // fix for default nette mapping
+				if (!preg_match('#^\\\\?([\w\\\\]*\\\\)?(\w*\*\w*?\\\\)?([\w\\\\]*\*\w*)\z#', $object, $m)) {
+					throw new PresenterFactoryException("Invalid mapping mask '$object'.");
+				}
+
+				$object = new PresenterMapping($module, [$m[1], $m[2] ?: '*Module\\', $m[3]]);
+			}
 			if (!is_object($object)) {
 				throw new PresenterFactoryException("Module '$module' must have object as mapping.");
 			}
