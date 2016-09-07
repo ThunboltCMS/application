@@ -18,6 +18,7 @@ use WebChemistry\Widgets;
 /**
  * @property-read User $user
  * @property-read array $names Lazy
+ * @method User getUser()
  */
 abstract class Presenter extends UI\Presenter {
 
@@ -237,7 +238,7 @@ abstract class Presenter extends UI\Presenter {
 		$presenter = substr($name, strrpos(':' . $name, ':'));
 		$dir = $this->getPresenterDir();
 		$paths = [
-			"$dir/../Resources/templates/$presenter/{$this->getView()}.latte"
+			"$dir/templates/$presenter/{$this->getView()}.latte"
 		];
 
 		return $paths;
