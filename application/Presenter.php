@@ -106,11 +106,11 @@ abstract class Presenter extends UI\Presenter {
 	}
 
 	/**
-	 * @param TranslatorProvider $translatorProvider
+	 * @param ITranslator $translator
 	 * @param SessionResolver|NULL $sessionResolver
 	 */
-	public function injectTranslator(TranslatorProvider $translatorProvider, SessionResolver $sessionResolver = NULL) {
-		$this->translator = $translatorProvider->getTranslator();
+	public function injectTranslator(ITranslator $translator, SessionResolver $sessionResolver = NULL) {
+		$this->translator = $translator;
 		$this->translatorSession = $sessionResolver;
 	}
 
