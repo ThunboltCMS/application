@@ -39,9 +39,6 @@ abstract class Presenter extends UI\Presenter {
 	/** @var SessionResolver */
 	private $translatorSession;
 
-	/** @var Parameters\Provider */
-	protected $settings;
-
 	/** @var Widgets\Manager */
 	private $widgets;
 
@@ -108,13 +105,6 @@ abstract class Presenter extends UI\Presenter {
 	 */
 	public function injectWidgets(Widgets\Factory $factory = NULL) {
 		$this->widgets = $factory ? $factory->create() : NULL;
-	}
-
-	/**
-	 * @param Parameters\Provider $parametersProvider
-	 */
-	public function injectProviders(Parameters\Provider $parametersProvider = NULL) {
-		$this->settings = $parametersProvider;
 	}
 
 	/**
