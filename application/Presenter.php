@@ -11,7 +11,6 @@ use Thunbolt\Application\ShortCuts\TPresenter;
 use Thunbolt\Localization\TranslatorProvider;
 use Thunbolt\User\User;
 use WebChemistry\Forms\Form;
-use WebChemistry\Forms\Traits\TSuggestion;
 use WebChemistry\Parameters;
 use Nette\Application\UI;
 use WebChemistry\Utils\Strings;
@@ -24,7 +23,6 @@ use WebChemistry\Widgets;
  */
 abstract class Presenter extends UI\Presenter {
 
-	use TSuggestion;
 	use TPresenter;
 
 	/** @var EntityManager @inject */
