@@ -6,7 +6,9 @@ use Kdyby\Doctrine\EntityManager;
 use Kdyby\Translation\LocaleResolver\SessionResolver;
 use Kdyby\Translation\Translator;
 use Nette\Application\ForbiddenRequestException;
+use Nette\Localization\ITranslator;
 use Thunbolt\Application\ShortCuts\TPresenter;
+use Thunbolt\Localization\TranslatorProvider;
 use Thunbolt\User\User;
 use WebChemistry\Forms\Form;
 use WebChemistry\Forms\Traits\TSuggestion;
@@ -31,7 +33,7 @@ abstract class Presenter extends UI\Presenter {
 	/** @var array */
 	private $names = [];
 
-	/** @var Translator */
+	/** @var Translator|ITranslator */
 	protected $translator;
 
 	/** @var SessionResolver */
@@ -116,11 +118,11 @@ abstract class Presenter extends UI\Presenter {
 	}
 
 	/**
-	 * @param Translator $translator
-	 * @param SessionResolver $sessionResolver
+	 * @param TranslatorProvider $translatorProvider
+	 * @param SessionResolver|NULL $sessionResolver
 	 */
-	public function injectTranslator(Translator $translator = NULL, SessionResolver $sessionResolver = NULL) {
-		$this->translator = $translator;
+	public function injectTranslator(TranslatorProvider $translatorProvider, SessionResolver $sessionResolver = NULL) {
+		$this->translator = $translatorProvider->getTranslator();
 		$this->translatorSession = $sessionResolver;
 	}
 

@@ -2,7 +2,9 @@
 
 namespace Thunbolt\Application;
 
-class Control extends \Nette\Application\UI\Control {
+use Nette\Application\UI\Control;
+
+abstract class BaseControl extends Control {
 
 	/**
 	 * @param string|array $snippets
