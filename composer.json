@@ -2,6 +2,7 @@
 	"name": "thunbolt/application",
 	"type": "library",
 	"require": {
+		"php": ">=7.1",
 		"nette/application": "^2.3",
 		"nette/di": "^2.3"
 	},

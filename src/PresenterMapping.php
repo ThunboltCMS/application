@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thunbolt\Application;
 
 class PresenterMapping implements IPresenterMapping {
@@ -13,7 +15,7 @@ class PresenterMapping implements IPresenterMapping {
 	/**
 	 * @param string $module
 	 */
-	public function __construct($module) {
+	public function __construct(string $module) {
 		$this->module = $module;
 	}
 
@@ -21,7 +23,7 @@ class PresenterMapping implements IPresenterMapping {
 	 * @param array $parts
 	 * @return string
 	 */
-	public function format(array $parts) {
+	public function format(array $parts): string {
 		// Front:Shop:Homepage
 		return "$parts[0]Bundle\\{$this->module}Module\\$parts[1]Presenter";
 	}
@@ -30,11 +32,13 @@ class PresenterMapping implements IPresenterMapping {
 	 * @param string $class
 	 * @return string|null
 	 */
-	public function unformat($class) {
+	public function unformat(string $class): ?string {
 		// ShopBundle\FrontModule\BasketPresenter => Shop:Front:Basket
 		if (preg_match('#^(' . self::$classRegex . ')Bundle\\\\' . $this->module . 'Module\\\\(' . self::$classRegex . ')Presenter$#', $class , $matches)) {
 			return $this->module . ':' . $matches[1] . ':' . $matches[2];
 		}
+
+		return NULL;
 	}
 
 }

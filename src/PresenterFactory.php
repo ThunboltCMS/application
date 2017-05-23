@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thunbolt\Application;
 
 use Nette;
@@ -34,7 +36,7 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 	 * @param string $name presenter name
 	 * @return Nette\Application\IPresenter
 	 */
-	public function createPresenter($name) {
+	public function createPresenter(string $name): Nette\Application\IPresenter {
 		return call_user_func($this->factory, $this->getPresenterClass($name));
 	}
 
@@ -44,7 +46,7 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 	 * @return string class name
 	 * @throws Nette\Application\InvalidPresenterException
 	 */
-	public function getPresenterClass(& $name) {
+	public function getPresenterClass(string &$name): string {
 		if (isset($this->cache[$name])) {
 			return $this->cache[$name];
 		}
@@ -84,7 +86,7 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 	 * @param array $mapping
 	 * @throws PresenterFactoryException
 	 */
-	public function setMapping(array $mapping) {
+	public function setMapping(array $mapping): void {
 		foreach ($mapping as $module => $object) {
 			if (is_string($object)) { // fix for default nette mapping
 				if (!preg_match('#^\\\\?([\w\\\\]*\\\\)?(\w*\*\w*?\\\\)?([\w\\\\]*\*\w*)\z#', $object, $m)) {
@@ -114,7 +116,7 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 	 * @return string
 	 * @internal
 	 */
-	public function formatPresenterClass($presenter) {
+	public function formatPresenterClass(string $presenter): string {
 		$parts = explode(':', $presenter);
 		$count = count($parts);
 		if ($count < 2 || $count > 3) {
@@ -135,7 +137,7 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 	 * @return string
 	 * @internal
 	 */
-	public function unformatPresenterClass($class) {
+	public function unformatPresenterClass(string $class): ?string {
 		foreach ($this->mapping as $module => $mapping) {
 			if ($unformated = $mapping->unformat($class)) {
 				return $unformated;

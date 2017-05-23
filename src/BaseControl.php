@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thunbolt\Application;
 
 use Nette\Application\UI\Control;
@@ -11,7 +13,7 @@ abstract class BaseControl extends Control {
 	 * @param string $link
 	 * @param array $args
 	 */
-	public function redraw($snippets = NULL, $link = 'this', $args = []) {
+	public function redraw($snippets = NULL, string $link = 'this', array $args = []): void {
 		if ($this->getPresenter()->isAjax()) {
 			foreach ((array) $snippets as $snippet) {
 				$this->redrawControl($snippet);
@@ -28,7 +30,7 @@ abstract class BaseControl extends Control {
 	 * @param  string
 	 * @return \stdClass
 	 */
-	public function flashMessage($message, $type = 'success') {
+	public function flashMessage(string $message, string $type = 'success'): \stdClass {
 		return parent::flashMessage($message, $type);
 	}
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Thunbolt\Application;
 
 use Kdyby\Doctrine\EntityManager;
@@ -7,11 +9,8 @@ use Kdyby\Translation\LocaleResolver\SessionResolver;
 use Kdyby\Translation\Translator;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Localization\ITranslator;
-use Thunbolt\Application\ShortCuts\TPresenter;
-use Thunbolt\Localization\TranslatorProvider;
 use Thunbolt\User\User;
 use WebChemistry\Forms\Form;
-use WebChemistry\Parameters;
 use Nette\Application\UI;
 use WebChemistry\Utils\Strings;
 use WebChemistry\Widgets;
@@ -22,8 +21,6 @@ use WebChemistry\Widgets;
  * @method User getUser()
  */
 abstract class Presenter extends UI\Presenter {
-
-	use TPresenter;
 
 	/** @var EntityManager @inject */
 	public $em;
@@ -46,7 +43,7 @@ abstract class Presenter extends UI\Presenter {
 	/**
 	 * @return string
 	 */
-	public function getPresenterDir() {
+	public function getPresenterDir(): string {
 		if (!$this->presenterDir) {
 			$this->presenterDir = dirname($this->getReflection()->getFileName());
 		}
@@ -57,21 +54,21 @@ abstract class Presenter extends UI\Presenter {
 	/**
 	 * @return Widgets\Manager
 	 */
-	public function getWidgets() {
+	public function getWidgets(): ?Widgets\Manager {
 		return $this->widgets ? $this->getComponent('widgets') : NULL;
 	}
 
 	/**
 	 * @return Widgets\Manager
 	 */
-	protected function createComponentWidgets() {
+	protected function createComponentWidgets(): Widgets\Manager {
 		return $this->widgets;
 	}
 
 	/**
 	 * @return UI\ITemplate
 	 */
-	protected function createTemplate() {
+	protected function createTemplate(): UI\ITemplate {
 		$template = parent::createTemplate();
 		$template->widgets = $this->getWidgets();
 
@@ -83,7 +80,7 @@ abstract class Presenter extends UI\Presenter {
 	/**
 	 * @return array
 	 */
-	public function getNames() {
+	public function getNames(): array {
 		if (!$this->names) {
 			$explode = explode(':', $this->name);
 			$this->names = [
@@ -101,7 +98,7 @@ abstract class Presenter extends UI\Presenter {
 	/**
 	 * @param Widgets\Factory $factory
 	 */
-	public function injectWidgets(Widgets\Factory $factory = NULL) {
+	public function injectWidgets(Widgets\Factory $factory = NULL): void {
 		$this->widgets = $factory ? $factory->create() : NULL;
 	}
 
@@ -109,7 +106,7 @@ abstract class Presenter extends UI\Presenter {
 	 * @param ITranslator $translator
 	 * @param SessionResolver|NULL $sessionResolver
 	 */
-	public function injectTranslator(ITranslator $translator, SessionResolver $sessionResolver = NULL) {
+	public function injectTranslator(ITranslator $translator, SessionResolver $sessionResolver = NULL): void {
 		$this->translator = $translator;
 		$this->translatorSession = $sessionResolver;
 	}
@@ -122,13 +119,13 @@ abstract class Presenter extends UI\Presenter {
 	 * @param string $locale
 	 * @return string
 	 */
-	public function translate($message, $count = NULL, array $parameters = array(), $domain = NULL, $locale = NULL) {
+	public function translate(string $message, int $count = NULL, array $parameters = array(), string $domain = NULL, string $locale = NULL): string {
 		return $this->translator ? $this->translator->translate($message, $count, $parameters, $domain, $locale) : $message;
 	}
 
 	/************************* Redirects **************************/
 
-	public function redirectRestore($code, $destination = NULL, $args = array()) {
+	public function redirectRestore($code, $destination = NULL, $args = []): void {
 		if ($backlink = $this->getParameter('backlink')) {
 			$this->restoreRequest($backlink);
 		}
@@ -137,7 +134,7 @@ abstract class Presenter extends UI\Presenter {
 
 	}
 
-	public function redirectStore($code, $destination = NULL, $args = array()) {
+	public function redirectStore($code, $destination = NULL, $args = []): void {
 		if (!$args) {
 			$destination['backlink'] = $this->storeRequest();
 		} else {
@@ -158,20 +155,20 @@ abstract class Presenter extends UI\Presenter {
 	 * @param string $link
 	 * @param array $args
 	 */
-	public function redraw($snippets = NULL, $link = 'this', $args = []) {
-		if ($this->getPresenter()->isAjax()) {
+	public function redraw($snippets = NULL, string $link = 'this', $args = []): void {
+		if ($this->isAjax()) {
 			foreach ((array) $snippets as $snippet) {
 				$this->redrawControl($snippet);
 			}
 		} else {
-			$this->getPresenter()->redirect($link, $args);
+			$this->redirect($link, $args);
 		}
 	}
 
 	/**
 	 * @param array $values name => value
 	 */
-	protected function checkParameters(array $values) {
+	protected function checkParameters(array $values): void {
 		$parameters = $this->getParameters();
 		$redirect = FALSE;
 
@@ -193,7 +190,7 @@ abstract class Presenter extends UI\Presenter {
 	 * @param UI\PresenterComponentReflection $element
 	 * @throws ForbiddenRequestException
 	 */
-	public function checkRequirements($element) {
+	public function checkRequirements($element): void {
 		$user = (array) $element->getAnnotation('user');
 
 		// @user loggedIn
@@ -223,7 +220,7 @@ abstract class Presenter extends UI\Presenter {
 	/**
 	 * @return array
 	 */
-	public function formatTemplateFiles() {
+	public function formatTemplateFiles(): array {
 		$name = $this->getName();
 		$presenter = substr($name, strrpos(':' . $name, ':'));
 		$dir = $this->getPresenterDir();
@@ -234,7 +231,7 @@ abstract class Presenter extends UI\Presenter {
 		return $paths;
 	}
 
-	public function formatLayoutTemplateFiles() {
+	public function formatLayoutTemplateFiles(): array {
 		if (preg_match('#/|\\\\#', $this->getLayout())) {
 			return [$this->getLayout()];
 		}
@@ -255,7 +252,7 @@ abstract class Presenter extends UI\Presenter {
 	/**
 	 * @param Form $form
 	 */
-	public function errorFormToFlash(Form $form) {
+	public function errorFormToFlash(Form $form): void {
 		foreach ($form->getOwnErrors() as $error) {
 			$this->flashMessage($error, 'error');
 		}
@@ -274,7 +271,7 @@ abstract class Presenter extends UI\Presenter {
 	 * @param  string
 	 * @return \stdClass
 	 */
-	public function flashMessage($message, $type = 'success') {
+	public function flashMessage(string $message, string $type = 'success'): \stdClass {
 		return parent::flashMessage($this->translate($message), $type);
 	}
 
