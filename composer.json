@@ -11,10 +11,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Thunbolt\\Application\\": "application/"
+			"Thunbolt\\Application\\": "src/"
 		},
-		"classmap": [
-			"shortcuts"
-		]
 	}
 }
