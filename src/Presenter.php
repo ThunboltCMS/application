@@ -232,7 +232,7 @@ abstract class Presenter extends UI\Presenter {
 	}
 
 	public function formatLayoutTemplateFiles(): array {
-		if (preg_match('#/|\\\\#', $this->getLayout())) {
+		if ($this->getLayout() && preg_match('#/|\\\\#', $this->getLayout())) {
 			return [$this->getLayout()];
 		}
 		$names = $this->getNames();
