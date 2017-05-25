@@ -33,7 +33,7 @@ class ThunboltPresenterMapping extends PresenterMapping {
 	public function unformat(string $class): ?string {
 		// AppBundle\FrontModule\HomepagePresenter => Front:Homepage
 		if (substr($class, 0, $this->length) === $this->defaultBundle . '\\') {
-			if (preg_match('#' . $this->module . 'Module\\\\(' . self::$classRegex . ')Presenter$#', $class, $matches)) {
+			if (preg_match('#' . $this->module . 'Module\\\\(' . self::CLASS_REGEX . ')Presenter$#', $class, $matches)) {
 				return $this->module . ':' . $matches[1];
 			}
 		}

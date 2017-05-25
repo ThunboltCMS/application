@@ -3,13 +3,14 @@
 	"type": "library",
 	"require": {
 		"php": ">=7.1",
-		"nette/application": "^2.3",
-		"nette/di": "^2.3"
+		"nette/application": "^3.0",
+		"nette/di": "^3.0"
 	},
 	"require-dev": {
 		"codeception/codeception": "^2.2",
 		"webchemistry/testing-helpers": "dev-master"
 	},
+	"minimum-stability": "alpha",
 	"autoload": {
 		"psr-4": {
 			"Thunbolt\\Application\\": "src/"

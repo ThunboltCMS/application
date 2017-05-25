@@ -14,7 +14,7 @@ class PresenterMapping implements IPresenterMapping {
 	/** @var string */
 	private $module;
 
-	public function __construct($module, array $params) {
+	public function __construct(string $module, array $params) {
 		$this->params = $params;
 		$this->module = $module;
 	}

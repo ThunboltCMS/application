@@ -7,7 +7,7 @@ namespace Thunbolt\Application;
 class PresenterMapping implements IPresenterMapping {
 
 	/** @var string */
-	protected static $classRegex = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
+	protected const CLASS_REGEX = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
 
 	/** @var string */
 	protected $module;
@@ -34,7 +34,7 @@ class PresenterMapping implements IPresenterMapping {
 	 */
 	public function unformat(string $class): ?string {
 		// ShopBundle\FrontModule\BasketPresenter => Shop:Front:Basket
-		if (preg_match('#^(' . self::$classRegex . ')Bundle\\\\' . $this->module . 'Module\\\\(' . self::$classRegex . ')Presenter$#', $class , $matches)) {
+		if (preg_match('#^(' . self::CLASS_REGEX . ')Bundle\\\\' . $this->module . 'Module\\\\(' . self::CLASS_REGEX . ')Presenter$#', $class , $matches)) {
 			return $this->module . ':' . $matches[1] . ':' . $matches[2];
 		}
 
