@@ -48,20 +48,6 @@ abstract class Presenter extends UI\Presenter {
 	}
 
 	/**
-	 * @return Widgets\Manager
-	 */
-	public function getWidgets(): ?Widgets\Manager {
-		return $this->widgets ? $this->getComponent('widgets') : NULL;
-	}
-
-	/**
-	 * @return Widgets\Manager
-	 */
-	protected function createComponentWidgets(): Widgets\Manager {
-		return $this->widgets;
-	}
-
-	/**
 	 * @return UI\ITemplate
 	 */
 	protected function createTemplate(): UI\ITemplate {
@@ -87,36 +73,6 @@ abstract class Presenter extends UI\Presenter {
 		}
 
 		return $this->names;
-	}
-
-	/************************* Injectors **************************/
-
-	/**
-	 * @param Widgets\Factory $factory
-	 */
-	public function injectWidgets(Widgets\Factory $factory = NULL): void {
-		$this->widgets = $factory ? $factory->create() : NULL;
-	}
-
-	/**
-	 * @param ITranslator $translator
-	 * @param SessionResolver|NULL $sessionResolver
-	 */
-	public function injectTranslator(ITranslator $translator, SessionResolver $sessionResolver = NULL): void {
-		$this->translator = $translator;
-		$this->translatorSession = $sessionResolver;
-	}
-
-	/**
-	 * @param string $message
-	 * @param int $count
-	 * @param array $parameters
-	 * @param string $domain
-	 * @param string $locale
-	 * @return string
-	 */
-	public function translate(string $message, int $count = NULL, array $parameters = array(), string $domain = NULL, string $locale = NULL): string {
-		return $this->translator ? $this->translator->translate($message, $count, $parameters, $domain, $locale) : $message;
 	}
 
 	/************************* Redirects **************************/
@@ -260,6 +216,38 @@ abstract class Presenter extends UI\Presenter {
 		}
 	}
 
+	// translations
+
+	/**
+	 * @param ITranslator $translator
+	 * @param SessionResolver|NULL $sessionResolver
+	 */
+	public function injectTranslator(ITranslator $translator, SessionResolver $sessionResolver = NULL): void {
+		$this->translator = $translator;
+		$this->translatorSession = $sessionResolver;
+	}
+
+	/**
+	 * @param string $message
+	 * @param int $count
+	 * @param array $parameters
+	 * @param string $domain
+	 * @param string $locale
+	 * @return string
+	 */
+	public function translate(string $message, int $count = NULL, array $parameters = array(), string $domain = NULL, string $locale = NULL): string {
+		return $this->translator ? $this->translator->translate($message, $count, $parameters, $domain, $locale) : $message;
+	}
+
+	// widgets
+
+	/**
+	 * @param Widgets\Factory $factory
+	 */
+	public function injectWidgets(Widgets\Factory $factory = NULL): void {
+		$this->widgets = $factory ? $factory->create() : NULL;
+	}
+
 	/**
 	 * Saves the message to template, that can be displayed after redirect.
 	 *
@@ -269,6 +257,20 @@ abstract class Presenter extends UI\Presenter {
 	 */
 	public function flashMessage(string $message, string $type = 'success'): \stdClass {
 		return parent::flashMessage($this->translate($message), $type);
+	}
+
+	/**
+	 * @return Widgets\Manager
+	 */
+	public function getWidgets(): ?Widgets\Manager {
+		return $this->widgets ? $this->getComponent('widgets') : NULL;
+	}
+
+	/**
+	 * @return Widgets\Manager
+	 */
+	protected function createComponentWidgets(): Widgets\Manager {
+		return $this->widgets;
 	}
 
 }
