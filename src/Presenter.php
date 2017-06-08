@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Thunbolt\Application;
 
-use Kdyby\Doctrine\EntityManager;
 use Kdyby\Translation\LocaleResolver\SessionResolver;
 use Kdyby\Translation\Translator;
 use Nette\Application\ForbiddenRequestException;
@@ -21,9 +20,6 @@ use WebChemistry\Widgets;
  * @method User getUser()
  */
 abstract class Presenter extends UI\Presenter {
-
-	/** @var EntityManager @inject */
-	public $em;
 
 	/** @var array */
 	private $names = [];
