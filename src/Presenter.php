@@ -9,7 +9,7 @@ use Kdyby\Translation\Translator;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Localization\ITranslator;
 use Thunbolt\User\User;
-use WebChemistry\Forms\Form;
+use Nette\Application\UI\Form;
 use Nette\Application\UI;
 use WebChemistry\Utils\Strings;
 use WebChemistry\Widgets;
