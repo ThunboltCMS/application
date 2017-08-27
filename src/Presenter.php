@@ -132,7 +132,7 @@ abstract class Presenter extends UI\Presenter {
 		}
 
 		if ($redirect) {
-			$this->redirect(301, 'this', $parameters);
+			$this->redirectPermanent('this', $parameters);
 		}
 	}
 
