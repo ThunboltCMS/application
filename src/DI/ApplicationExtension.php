@@ -17,8 +17,6 @@ class ApplicationExtension extends CompilerExtension {
 
 		$def = $builder->getDefinition($builder->getByType(IPresenterFactory::class));
 		$def->getFactory()->arguments[] = [
-			'Front' => new ThunboltPresenterMapping('Front'),
-			'Admin' => new ThunboltPresenterMapping('Admin'),
 			'Error' => new ErrorPresenterMapping('Error'),
 		];
 		$def->setFactory(PresenterFactory::class, $def->getFactory()->arguments);

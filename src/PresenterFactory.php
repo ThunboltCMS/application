@@ -24,9 +24,9 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 	 * @param callable $factory function (string $class): IPresenter
 	 * @param array $mapping
 	 */
-	public function __construct(callable $factory = NULL, array $mapping = []) {
+	public function __construct(callable $factory = null, array $mapping = []) {
 		$this->factory = $factory ?: function ($class) {
-			return new $class;
+			return new $class();
 		};
 		$this->setMapping($mapping);
 	}
@@ -67,7 +67,7 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 			throw new Nette\Application\InvalidPresenterException(
 				"Cannot load presenter '$name', class '$class' is not Nette\\Application\\IPresenter implementor."
 			);
-		} elseif ($reflection->isAbstract()) {
+		} else if ($reflection->isAbstract()) {
 			throw new Nette\Application\InvalidPresenterException("Cannot load presenter '$name', class '$class' is abstract.");
 		}
 
@@ -124,7 +124,7 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 		}
 		$module = array_shift($parts);
 		if (!isset($this->mapping[$module])) {
-			throw new PresenterFactoryException("Presenter mapping for module '$module' not exists.");
+			$this->mapping[$module] = new PresenterMapping($module); // default mapping
 		}
 
 		return $this->mapping[$module]->format($parts);

@@ -13,9 +13,9 @@ abstract class BaseControl extends Control {
 	 * @param string $link
 	 * @param array $args
 	 */
-	public function redraw($snippets = NULL, string $link = 'this', array $args = []): void {
+	public function redraw($snippets = null, string $link = 'this', array $args = []): void {
 		if ($this->getPresenter()->isAjax()) {
-			foreach ((array) $snippets as $snippet) {
+			foreach ((array)$snippets as $snippet) {
 				$this->redrawControl($snippet);
 			}
 		} else {

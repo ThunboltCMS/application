@@ -11,8 +11,7 @@ use Nette\Localization\ITranslator;
 use Thunbolt\User\User;
 use Nette\Application\UI\Form;
 use Nette\Application\UI;
-use WebChemistry\Utils\Strings;
-use WebChemistry\Widgets;
+use Nette\Utils\Strings;
 
 /**
  * @property-read User $user
@@ -30,9 +29,6 @@ abstract class Presenter extends UI\Presenter {
 	/** @var SessionResolver */
 	private $translatorSession;
 
-	/** @var Widgets\Manager */
-	private $widgets;
-
 	/** @var string */
 	private $presenterDir;
 
@@ -47,16 +43,6 @@ abstract class Presenter extends UI\Presenter {
 		return $this->presenterDir;
 	}
 
-	/**
-	 * @return UI\ITemplate
-	 */
-	protected function createTemplate(): UI\ITemplate {
-		$template = parent::createTemplate();
-		$template->widgets = $this->getWidgets();
-
-		return $template;
-	}
-
 	/************************* Names **************************/
 
 	/**
@@ -66,9 +52,9 @@ abstract class Presenter extends UI\Presenter {
 		if (!$this->names) {
 			$explode = explode(':', $this->name);
 			$this->names = [
-				'module'    => count($explode) === 2 ? $explode[0] : NULL,
+				'module' => count($explode) === 2 ? $explode[0] : null,
 				'presenter' => end($explode),
-				'action' => $this->action
+				'action' => $this->action,
 			];
 		}
 
@@ -77,16 +63,15 @@ abstract class Presenter extends UI\Presenter {
 
 	/************************* Redirects **************************/
 
-	public function redirectRestore($code, $destination = NULL, $args = []): void {
+	public function redirectRestore($code, $destination = null, $args = []): void {
 		if ($backlink = $this->getParameter('backlink')) {
 			$this->restoreRequest($backlink);
 		}
 
 		call_user_func_array([$this, 'redirect'], func_get_args());
-
 	}
 
-	public function redirectStore($code, $destination = NULL, $args = []): void {
+	public function redirectStore($code, $destination = null, $args = []): void {
 		if (!$args) {
 			$destination['backlink'] = $this->storeRequest();
 		} else {
@@ -107,9 +92,9 @@ abstract class Presenter extends UI\Presenter {
 	 * @param string $link
 	 * @param array $args
 	 */
-	public function redraw($snippets = NULL, string $link = 'this', $args = []): void {
+	public function redraw($snippets = null, string $link = 'this', $args = []): void {
 		if ($this->isAjax()) {
-			foreach ((array) $snippets as $snippet) {
+			foreach ((array)$snippets as $snippet) {
 				$this->redrawControl($snippet);
 			}
 		} else {
@@ -122,12 +107,12 @@ abstract class Presenter extends UI\Presenter {
 	 */
 	protected function checkParameters(array $values): void {
 		$parameters = $this->getParameters();
-		$redirect = FALSE;
+		$redirect = false;
 
 		foreach ($values as $name => $value) {
 			if (!isset($parameters[$name]) || $parameters[$name] !== Strings::webalize($value)) {
 				$parameters[$name] = Strings::webalize($value);
-				$redirect = TRUE;
+				$redirect = true;
 			}
 		}
 
@@ -143,22 +128,22 @@ abstract class Presenter extends UI\Presenter {
 	 * @throws ForbiddenRequestException
 	 */
 	public function checkRequirements($element): void {
-		$user = (array) $element->getAnnotation('user');
+		$user = (array)$element->getAnnotation('user');
 
 		// @user loggedIn
-		if (in_array('loggedIn', $user, TRUE) && !$this->getUser()->isLoggedIn()) {
+		if (in_array('loggedIn', $user, true) && !$this->getUser()->isLoggedIn()) {
 			$this->flashMessage('core.requirements.loggedIn', 'error');
 			$this->redirect('home.front');
 		}
 
 		// @user loggedOut
-		if (in_array('loggedOut', $user, TRUE) && $this->getUser()->isLoggedIn()) {
+		if (in_array('loggedOut', $user, true) && $this->getUser()->isLoggedIn()) {
 			$this->flashMessage('core.requirements.loggedOut', 'error');
 			$this->redirect('home.front');
 		}
 
 		// @isAllowed resource:privilege
-		$isAllowed = (array) $element->getAnnotation('isAllowed');
+		$isAllowed = (array)$element->getAnnotation('isAllowed');
 
 		foreach ($isAllowed as $road) {
 			if (!$this->getUser()->isAllowed($road)) {
@@ -177,7 +162,7 @@ abstract class Presenter extends UI\Presenter {
 		$presenter = substr($name, strrpos(':' . $name, ':'));
 		$dir = $this->getPresenterDir();
 		$paths = [
-			"$dir/templates/$presenter/{$this->getView()}.latte"
+			"$dir/templates/$presenter/{$this->getView()}.latte",
 		];
 
 		return $paths;
@@ -196,7 +181,7 @@ abstract class Presenter extends UI\Presenter {
 			"$presenterDir/templates/@layout.latte",
 			"$presenterDir/templates/$presenter/@layout.latte",
 		];
-		$list[] = $this->getContext()->parameters['layoutsDir']. "/@$layout.latte";
+		$list[] = $this->getContext()->parameters['layoutsDir'] . "/@$layout.latte";
 
 		return $list;
 	}
@@ -209,7 +194,7 @@ abstract class Presenter extends UI\Presenter {
 			$this->flashMessage($error, 'error');
 		}
 
-		foreach ($form->getControls() as $control ) {
+		foreach ($form->getControls() as $control) {
 			foreach ($control->getErrors() as $error) {
 				$this->flashMessage($control->caption . ': ' . $error, 'error');
 			}
@@ -222,7 +207,7 @@ abstract class Presenter extends UI\Presenter {
 	 * @param ITranslator $translator
 	 * @param SessionResolver|NULL $sessionResolver
 	 */
-	public function injectTranslator(ITranslator $translator, SessionResolver $sessionResolver = NULL): void {
+	public function injectTranslator(ITranslator $translator, SessionResolver $sessionResolver = null): void {
 		$this->translator = $translator;
 		$this->translatorSession = $sessionResolver;
 	}
@@ -235,17 +220,15 @@ abstract class Presenter extends UI\Presenter {
 	 * @param string $locale
 	 * @return string
 	 */
-	public function translate(string $message, int $count = NULL, array $parameters = array(), string $domain = NULL, string $locale = NULL): string {
-		return $this->translator ? $this->translator->translate($message, $count, $parameters, $domain, $locale) : $message;
-	}
+	public function translate(string $message, int $count = null, array $parameters = [], string $domain = null, string $locale = null): string {
+		if (!$this->translator) {
+			return $message;
+		}
+		if ($this->translator instanceof Translator) {
+			return $this->translate($message, $count, $parameters, $domain, $locale);
+		}
 
-	// widgets
-
-	/**
-	 * @param Widgets\Factory $factory
-	 */
-	public function injectWidgets(Widgets\Factory $factory = NULL): void {
-		$this->widgets = $factory ? $factory->create() : NULL;
+		return $this->translate($message, $count);
 	}
 
 	/**
@@ -257,20 +240,6 @@ abstract class Presenter extends UI\Presenter {
 	 */
 	public function flashMessage(string $message, string $type = 'success'): \stdClass {
 		return parent::flashMessage($this->translate($message), $type);
-	}
-
-	/**
-	 * @return Widgets\Manager
-	 */
-	public function getWidgets(): ?Widgets\Manager {
-		return $this->widgets ? $this->getComponent('widgets') : NULL;
-	}
-
-	/**
-	 * @return Widgets\Manager
-	 */
-	protected function createComponentWidgets(): Widgets\Manager {
-		return $this->widgets;
 	}
 
 }

@@ -24,8 +24,8 @@ class PresenterMapping implements IPresenterMapping {
 	 * @return string
 	 */
 	public function format(array $parts): string {
-		// Front:Shop:Homepage
-		return "$parts[0]Bundle\\{$this->module}Module\\$parts[1]Presenter";
+		// Front:Homepage
+		return "{$this->module}Bundle\\Presenters\\$parts[0]Presenter";
 	}
 
 	/**
@@ -33,12 +33,12 @@ class PresenterMapping implements IPresenterMapping {
 	 * @return string|null
 	 */
 	public function unformat(string $class): ?string {
-		// ShopBundle\FrontModule\BasketPresenter => Shop:Front:Basket
-		if (preg_match('#^(' . self::CLASS_REGEX . ')Bundle\\\\' . $this->module . 'Module\\\\(' . self::CLASS_REGEX . ')Presenter$#', $class , $matches)) {
-			return $this->module . ':' . $matches[1] . ':' . $matches[2];
+		// FrontBundle\Presenters\HomepagePresenter => Front:Basket
+		if (preg_match('#^(' . self::CLASS_REGEX . ')Bundle\\\\Presenters\\\\(' . self::CLASS_REGEX . ')Presenter$#', $class, $matches)) {
+			return $this->module . ':' . $matches[2];
 		}
 
-		return NULL;
+		return null;
 	}
 
 }
