@@ -225,10 +225,10 @@ abstract class Presenter extends UI\Presenter {
 			return $message;
 		}
 		if ($this->translator instanceof Translator) {
-			return $this->translate($message, $count, $parameters, $domain, $locale);
+			return $this->translator->translate($message, $count, $parameters, $domain, $locale);
 		}
 
-		return $this->translate($message, $count);
+		return $this->translator->translate($message, $count);
 	}
 
 	/**
