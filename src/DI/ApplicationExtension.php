@@ -16,9 +16,6 @@ class ApplicationExtension extends CompilerExtension {
 		$builder = $this->getContainerBuilder();
 
 		$def = $builder->getDefinition($builder->getByType(IPresenterFactory::class));
-		$def->getFactory()->arguments[] = [
-			'Error' => new ErrorPresenterMapping('Error'),
-		];
 		$def->setFactory(PresenterFactory::class, $def->getFactory()->arguments);
 	}
 

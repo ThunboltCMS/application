@@ -11,7 +11,7 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 
 	use Nette\SmartObject;
 
-	/** @var IPresenterMapping[] */
+	/** @var array */
 	private $mapping = [];
 
 	/** @var array */
@@ -22,13 +22,16 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 
 	/**
 	 * @param callable $factory function (string $class): IPresenter
-	 * @param array $mapping
 	 */
-	public function __construct(callable $factory = null, array $mapping = []) {
+	public function __construct(callable $factory = null) {
 		$this->factory = $factory ?: function ($class) {
 			return new $class();
 		};
-		$this->setMapping($mapping);
+		$this->mapping = [
+			'Front' => [
+				new PresenterMapping('Front'),
+			],
+		];
 	}
 
 	/**
@@ -82,6 +85,17 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 	}
 
 	/**
+	 * @param string $module
+	 * @param IPresenterMapping $mapping
+	 * @return static
+	 */
+	public function addMapping(string $module, IPresenterMapping $mapping) {
+		$this->mapping[$module][] = $mapping;
+
+		return $this;
+	}
+
+	/**
 	 * Sets mapping as pairs [module => IPresenterMapping]
 	 * @param array $mapping
 	 * @throws PresenterFactoryException
@@ -124,10 +138,17 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 		}
 		$module = array_shift($parts);
 		if (!isset($this->mapping[$module])) {
-			$this->mapping[$module] = new PresenterMapping($module); // default mapping
+			throw new PresenterFactoryException("Presenter mapping for module '$module' is not set.");
 		}
 
-		return $this->mapping[$module]->format($parts);
+		/** @var IPresenterMapping $mapping */
+		foreach ($this->mapping[$module] as $mapping) {
+			if (class_exists($mapping->format($parts))) {
+				return $mapping->format($parts);
+			}
+		}
+
+		return $this->mapping[$module][0]->format($parts);
 	}
 
 	/**
@@ -138,9 +159,15 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 	 * @internal
 	 */
 	public function unformatPresenterClass(string $class): ?string {
-		foreach ($this->mapping as $module => $mapping) {
-			if ($unformated = $mapping->unformat($class)) {
-				return $unformated;
+		foreach ($this->mapping as $module => $mappings) {
+			if (!is_array($mappings)) {
+				continue;
+			}
+
+			foreach ($mappings as $mapping) {
+				if ($unformated = $mapping->unformat($class)) {
+					return $unformated;
+				}
 			}
 		}
 

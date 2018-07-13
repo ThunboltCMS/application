@@ -12,11 +12,20 @@ class PresenterMapping implements IPresenterMapping {
 	/** @var string */
 	protected $module;
 
+	/** @var string|null */
+	protected $namespace;
+
 	/**
 	 * @param string $module
+	 * @param string|null $namespace
 	 */
-	public function __construct(string $module) {
+	public function __construct(string $module, ?string $namespace = null) {
 		$this->module = $module;
+		$this->namespace = $namespace;
+
+		if ($this->namespace) {
+			$this->namespace = rtrim($this->namespace, '\\') . '\\';
+		}
 	}
 
 	/**
@@ -25,7 +34,7 @@ class PresenterMapping implements IPresenterMapping {
 	 */
 	public function format(array $parts): string {
 		// Front:Homepage
-		return "{$this->module}Bundle\\Presenters\\$parts[0]Presenter";
+		return "{$this->namespace}{$this->module}Bundle\\Presenters\\$parts[0]Presenter";
 	}
 
 	/**
@@ -34,7 +43,7 @@ class PresenterMapping implements IPresenterMapping {
 	 */
 	public function unformat(string $class): ?string {
 		// FrontBundle\Presenters\HomepagePresenter => Front:Basket
-		if (preg_match('#^(' . self::CLASS_REGEX . ')Bundle\\\\Presenters\\\\(' . self::CLASS_REGEX . ')Presenter$#', $class, $matches)) {
+		if (preg_match('#^' . preg_quote((string) $this->namespace) . '(' . self::CLASS_REGEX . ')Bundle\\\\Presenters\\\\(' . self::CLASS_REGEX . ')Presenter$#', $class, $matches)) {
 			return $this->module . ':' . $matches[2];
 		}
 
