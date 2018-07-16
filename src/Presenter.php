@@ -238,7 +238,7 @@ abstract class Presenter extends UI\Presenter {
 	 * @param  string
 	 * @return \stdClass
 	 */
-	public function flashMessage(string $message, string $type = 'success'): \stdClass {
+	public function flashMessage($message, string $type = 'success'): \stdClass {
 		return parent::flashMessage($this->translate($message), $type);
 	}
 
