@@ -43,8 +43,8 @@ class PresenterMapping implements IPresenterMapping {
 	 */
 	public function unformat(string $class): ?string {
 		// FrontBundle\Presenters\HomepagePresenter => Front:Basket
-		if (preg_match('#^' . preg_quote((string) $this->namespace) . '(' . self::CLASS_REGEX . ')Bundle\\\\Presenters\\\\(' . self::CLASS_REGEX . ')Presenter$#', $class, $matches)) {
-			return $this->module . ':' . $matches[2];
+		if (preg_match('#^' . preg_quote((string) $this->namespace) . preg_quote($this->module) . 'Bundle\\\\Presenters\\\\(' . self::CLASS_REGEX . ')Presenter$#', $class, $matches)) {
+			return $this->module . ':' . $matches[1];
 		}
 
 		return null;
