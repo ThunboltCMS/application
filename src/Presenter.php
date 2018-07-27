@@ -110,8 +110,8 @@ abstract class Presenter extends UI\Presenter {
 		$redirect = false;
 
 		foreach ($values as $name => $value) {
-			if (!isset($parameters[$name]) || $parameters[$name] !== Strings::webalize((string) $value)) {
-				$parameters[$name] = Strings::webalize($value);
+			if (!isset($parameters[$name]) || $parameters[$name] != Strings::webalize((string) $value)) {
+				$parameters[$name] = Strings::webalize((string) $value);
 				$redirect = true;
 			}
 		}
