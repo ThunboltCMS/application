@@ -50,7 +50,7 @@ abstract class Presenter extends UI\Presenter {
 	 */
 	public function getNames(): array {
 		if (!$this->names) {
-			$explode = explode(':', $this->name);
+			$explode = explode(':', $this->getName());
 			$this->names = [
 				'module' => count($explode) === 2 ? $explode[0] : null,
 				'presenter' => end($explode),
