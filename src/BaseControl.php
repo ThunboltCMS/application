@@ -34,4 +34,8 @@ abstract class BaseControl extends Control {
 		return parent::flashMessage($message, $type);
 	}
 
+	public function isAjax(): bool {
+		return $this->getPresenter()->isAjax();
+	}
+
 }
