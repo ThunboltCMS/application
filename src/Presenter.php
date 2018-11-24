@@ -152,17 +152,6 @@ abstract class Presenter extends UI\Presenter {
 			$this->flashMessage('core.requirements.loggedOut', 'error');
 			$this->redirect('home.front');
 		}
-
-		// @isAllowed resource:privilege
-		$isAllowed = (array)$element->getAnnotation('isAllowed');
-
-		foreach ($isAllowed as $road) {
-			if (!$this->getUser()->isAllowed($road)) {
-				$module = substr($this->getName(), 0, strpos($this->getName(), ':'));
-				$this->flashMessage('core.requirements.isAllowed', 'error');
-				$this->redirect('home.' . strtolower($module));
-			}
-		}
 	}
 
 	/**
