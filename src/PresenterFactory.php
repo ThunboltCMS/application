@@ -133,8 +133,8 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 	public function formatPresenterClass(string $presenter): string {
 		$parts = explode(':', $presenter);
 		$count = count($parts);
-		if ($count < 2 || $count > 3) {
-			throw new PresenterFactoryException("Invalid presenter path '$presenter'.");
+		if ($count !== 2) {
+			throw new Nette\Application\InvalidPresenterException("Invalid presenter path '$presenter'.");
 		}
 		$module = array_shift($parts);
 		if (!isset($this->mapping[$module])) {
