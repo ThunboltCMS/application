@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Thunbolt\Application;
 
 use Kdyby\Translation\LocaleResolver\SessionResolver;
-use Kdyby\Translation\Translator;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Localization\ITranslator;
 use Thunbolt\User\User;
@@ -23,7 +22,7 @@ abstract class Presenter extends UI\Presenter {
 	/** @var array */
 	private $names = [];
 
-	/** @var Translator|ITranslator */
+	/** @var ITranslator|null */
 	protected $translator;
 
 	/** @var SessionResolver */
@@ -216,10 +215,10 @@ abstract class Presenter extends UI\Presenter {
 	// translations
 
 	/**
-	 * @param ITranslator $translator
-	 * @param SessionResolver|NULL $sessionResolver
+	 * @param ITranslator|null $translator
+	 * @param SessionResolver|null $sessionResolver
 	 */
-	public function injectTranslator(ITranslator $translator, SessionResolver $sessionResolver = null): void {
+	public function injectTranslator(?ITranslator $translator = null, SessionResolver $sessionResolver = null): void {
 		$this->translator = $translator;
 		$this->translatorSession = $sessionResolver;
 	}
