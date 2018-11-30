@@ -6,6 +6,7 @@ namespace Thunbolt\Application;
 
 use Kdyby\Translation\LocaleResolver\SessionResolver;
 use Nette\Application\ForbiddenRequestException;
+use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Localization\ITranslator;
 use Thunbolt\User\User;
 use Nette\Application\UI\Form;
@@ -15,6 +16,7 @@ use Nette\Utils\Strings;
 /**
  * @property-read User $user
  * @property-read array $names Lazy
+ * @property-read Template|\stdClass $template
  * @method User getUser()
  */
 abstract class Presenter extends UI\Presenter {
