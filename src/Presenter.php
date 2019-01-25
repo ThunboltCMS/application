@@ -188,17 +188,14 @@ abstract class Presenter extends UI\Presenter {
 		return $list;
 	}
 
-	/**
-	 * @param Form $form
-	 */
-	public function errorFormToFlash(Form $form): void {
+	public function errorFormToFlash(Form $form, bool $caption = true): void {
 		foreach ($form->getOwnErrors() as $error) {
 			$this->flashMessage($error, 'error');
 		}
 
 		foreach ($form->getControls() as $control) {
 			foreach ($control->getErrors() as $error) {
-				$this->flashMessage($control->caption . ': ' . $error, 'error');
+				$this->flashMessage(($caption ? ($control->caption . ': ') : '') . $error, 'error');
 			}
 		}
 	}

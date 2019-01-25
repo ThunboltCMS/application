@@ -138,7 +138,8 @@ class PresenterFactory implements Nette\Application\IPresenterFactory {
 		}
 		$module = array_shift($parts);
 		if (!isset($this->mapping[$module])) {
-			throw new PresenterFactoryException("Presenter mapping for module '$module' is not set.");
+			$this->mapping[$module] = [new PresenterMapping($module)];
+			//throw new PresenterFactoryException("Presenter mapping for module '$module' is not set.");
 		}
 
 		/** @var IPresenterMapping $mapping */
