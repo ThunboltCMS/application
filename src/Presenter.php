@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Thunbolt\Application;
 
-use Kdyby\Translation\LocaleResolver\SessionResolver;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Localization\ITranslator;
@@ -20,14 +19,11 @@ use Nette\Utils\Strings;
  */
 abstract class Presenter extends UI\Presenter {
 
-	/** @var array */
-	private $names = [];
-
 	/** @var ITranslator|null */
 	protected $translator;
 
-	/** @var SessionResolver */
-	private $translatorSession;
+	/** @var array */
+	private $names = [];
 
 	/** @var string */
 	private $presenterDir;
@@ -185,36 +181,6 @@ abstract class Presenter extends UI\Presenter {
 		$list[] = $this->getContext()->parameters['layoutsDir'] . "/@$layout.latte";
 
 		return $list;
-	}
-
-	// translations
-
-	/**
-	 * @param ITranslator|null $translator
-	 * @param SessionResolver|null $sessionResolver
-	 */
-	public function injectTranslator(?ITranslator $translator = null, SessionResolver $sessionResolver = null): void {
-		$this->translator = $translator;
-		$this->translatorSession = $sessionResolver;
-	}
-
-	/**
-	 * @param string $message
-	 * @param int $count
-	 * @param array $parameters
-	 * @param string $domain
-	 * @param string $locale
-	 * @return string
-	 */
-	public function translate(string $message, int $count = null, array $parameters = [], string $domain = null, string $locale = null): string {
-		if (!$this->translator) {
-			return $message;
-		}
-		if ($this->translator instanceof Translator) {
-			return $this->translator->translate($message, $count, $parameters, $domain, $locale);
-		}
-
-		return $this->translator->translate($message, $count);
 	}
 
 	/**
