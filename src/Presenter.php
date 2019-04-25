@@ -7,6 +7,7 @@ namespace Thunbolt\Application;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Localization\ITranslator;
+use ProLib\Efficiency\Utils\ControlUtils;
 use Thunbolt\User\User;
 use Nette\Application\UI;
 use Nette\Utils\Strings;
@@ -27,6 +28,15 @@ abstract class Presenter extends UI\Presenter {
 
 	/** @var string */
 	private $presenterDir;
+
+	/** @var ControlUtils */
+	protected $_utils;
+
+	protected function startup() {
+		$this->_utils = new ControlUtils($this);
+
+		parent::startup();
+	}
 
 	/**
 	 * @return string
