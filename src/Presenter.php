@@ -9,7 +9,6 @@ use Nette\Application\ForbiddenRequestException;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Localization\ITranslator;
 use Thunbolt\User\User;
-use Nette\Application\UI\Form;
 use Nette\Application\UI;
 use Nette\Utils\Strings;
 
@@ -186,18 +185,6 @@ abstract class Presenter extends UI\Presenter {
 		$list[] = $this->getContext()->parameters['layoutsDir'] . "/@$layout.latte";
 
 		return $list;
-	}
-
-	public function errorFormToFlash(Form $form, bool $caption = true): void {
-		foreach ($form->getOwnErrors() as $error) {
-			$this->flashMessage($error, 'error');
-		}
-
-		foreach ($form->getControls() as $control) {
-			foreach ($control->getErrors() as $error) {
-				$this->flashMessage(($caption ? ($control->caption . ': ') : '') . $error, 'error');
-			}
-		}
 	}
 
 	// translations
