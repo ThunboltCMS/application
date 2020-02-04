@@ -1,10 +1,10 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Thunbolt\Application;
 
+use Nette\Application;
 use Nette\Application\ForbiddenRequestException;
+use Nette\Application\Helpers;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Localization\ITranslator;
 use ProLib\Efficiency\Utils\ControlUtils;
@@ -23,9 +23,6 @@ abstract class Presenter extends UI\Presenter {
 	/** @var ITranslator|null */
 	protected $translator;
 
-	/** @var array */
-	private $names = [];
-
 	/** @var string */
 	private $presenterDir;
 
@@ -38,69 +35,27 @@ abstract class Presenter extends UI\Presenter {
 		parent::startup();
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getPresenterDir(): string {
-		if (!$this->presenterDir) {
-			$this->presenterDir = dirname($this->getReflection()->getFileName());
-		}
-
-		return $this->presenterDir;
-	}
-
-	/************************* Names **************************/
-
-	/**
-	 * @return array
-	 */
-	public function getNames(): array {
-		if (!$this->names) {
-			$explode = explode(':', $this->getName());
-			$this->names = [
-				'module' => count($explode) === 2 ? $explode[0] : null,
-				'presenter' => end($explode),
-				'action' => $this->action,
-			];
-		}
-
-		return $this->names;
-	}
 
 	/************************* Redirects **************************/
 
 	public function backLink(string $destination, array $params = []): string {
-		$params['backlink'] = $this->link('this', ['backlink' => null]);
+		$params['_backlink'] = $this->link('this', ['_backlink' => null]);
 
 		return $this->link($destination, $params);
 	}
 
-	public function redirectBackLink(string $destination, array $params = []): string {
-		$params['backlink'] = $this->link('this', ['backlink' => null]);
+	public function redirectWithBackLink(string $destination, array $params = []) {
+		$params['_backlink'] = $this->link('this', ['_backlink' => null]);
 
 		$this->redirect($destination, $params);
 	}
 
-	public function redirectRestore($code, $destination = null, $args = []): void {
-		if ($backlink = $this->getParameter('backlink')) {
-			$this->restoreRequest($backlink);
-		}
-
-		call_user_func_array([$this, 'redirect'], func_get_args());
-	}
-
-	public function redirectStore($code, $destination = null, $args = []): void {
-		if (!$args) {
-			$destination['backlink'] = $this->storeRequest();
+	public function redirectBack(string $destination, array $params = []): void {
+		if ($backlink = $this->getParameter('_backlink')) {
+			$this->redirectUrl($backlink);
 		} else {
-			$args['backlink'] = $this->storeRequest();
+			$this->redirect($destination, $params);
 		}
-
-		if (func_num_args() < 3) {
-			$this->redirect($code, $destination);
-		}
-
-		$this->redirect($code, $destination, $args);
 	}
 
 	/************************* Other methods **************************/
@@ -128,7 +83,7 @@ abstract class Presenter extends UI\Presenter {
 		$redirect = false;
 
 		foreach ($values as $name => $value) {
-			if (!isset($parameters[$name]) || $parameters[$name] != Strings::webalize((string) $value)) {
+			if (!isset($parameters[$name]) || $parameters[$name] !== Strings::webalize((string) $value)) {
 				$parameters[$name] = Strings::webalize((string) $value);
 				$redirect = true;
 			}
@@ -139,30 +94,18 @@ abstract class Presenter extends UI\Presenter {
 		}
 	}
 
+	private function getPresenterDir(): string {
+		if (!$this->presenterDir) {
+			$this->presenterDir = dirname($this->getReflection()->getFileName());
+		}
+
+		return $this->presenterDir;
+	}
+
 	/************************* Rewrite parent methods **************************/
 
 	/**
-	 * @param UI\PresenterComponentReflection $element
-	 * @throws ForbiddenRequestException
-	 */
-	public function checkRequirements($element): void {
-		$user = (array)$element->getAnnotation('user');
-
-		// @user loggedIn
-		if (in_array('loggedIn', $user, true) && !$this->getUser()->isLoggedIn()) {
-			$this->flashMessage('core.requirements.loggedIn', 'error');
-			$this->redirect('home.front');
-		}
-
-		// @user loggedOut
-		if (in_array('loggedOut', $user, true) && $this->getUser()->isLoggedIn()) {
-			$this->flashMessage('core.requirements.loggedOut', 'error');
-			$this->redirect('home.front');
-		}
-	}
-
-	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function formatTemplateFiles(): array {
 		$name = $this->getName();
@@ -175,13 +118,15 @@ abstract class Presenter extends UI\Presenter {
 		return $paths;
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function formatLayoutTemplateFiles(): array {
 		if ($this->getLayout() && preg_match('#/|\\\\#', $this->getLayout())) {
 			return [$this->getLayout()];
 		}
-		$names = $this->getNames();
-		$module = $names['module'];
-		$presenter = $names['presenter'];
+		[$module, $presenter] = Helpers::splitName($this->getName());
+
 		$layout = $this->getLayout() ? $this->getLayout() : strtolower($module);
 		$presenterDir = $this->getPresenterDir();
 		$list = [
@@ -201,7 +146,7 @@ abstract class Presenter extends UI\Presenter {
 	 * @return \stdClass
 	 */
 	public function flashMessage($message, string $type = 'success'): \stdClass {
-		return parent::flashMessage($this->translate($message), $type);
+		return parent::flashMessage($message, $type);
 	}
 
 }
