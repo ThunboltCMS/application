@@ -26,7 +26,7 @@ abstract class Presenter extends UI\Presenter {
 	/** @var ControlUtils */
 	protected $_utils;
 
-	protected function startup(): void {
+	protected function startup() {
 		$this->_utils = new ControlUtils($this);
 
 		parent::startup();
