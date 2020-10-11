@@ -6,6 +6,7 @@ use Nette\Application;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Helpers;
 use Nette\Bridges\ApplicationLatte\Template;
+use Nette\DI\Container;
 use Nette\Localization\ITranslator;
 use ProLib\Efficiency\Utils\ControlUtils;
 use Thunbolt\User\User;
@@ -14,7 +15,6 @@ use Nette\Utils\Strings;
 
 /**
  * @property-read User $user
- * @property-read array $names Lazy
  * @property-read Template|\stdClass $template
  * @method User getUser()
  */
@@ -23,18 +23,14 @@ abstract class Presenter extends UI\Presenter {
 	/** @var ITranslator|null */
 	protected $translator;
 
-	/** @var string */
-	private $presenterDir;
-
 	/** @var ControlUtils */
 	protected $_utils;
 
-	protected function startup() {
+	protected function startup(): void {
 		$this->_utils = new ControlUtils($this);
 
 		parent::startup();
 	}
-
 
 	/************************* Redirects **************************/
 
@@ -94,49 +90,6 @@ abstract class Presenter extends UI\Presenter {
 		}
 	}
 
-	private function getPresenterDir(): string {
-		if (!$this->presenterDir) {
-			$this->presenterDir = dirname($this->getReflection()->getFileName());
-		}
-
-		return $this->presenterDir;
-	}
-
-	/************************* Rewrite parent methods **************************/
-
-	/**
-	 * @return string[]
-	 */
-	public function formatTemplateFiles(): array {
-		$name = $this->getName();
-		$presenter = substr($name, strrpos(':' . $name, ':'));
-		$dir = $this->getPresenterDir();
-		$paths = [
-			"$dir/templates/$presenter/{$this->getView()}.latte",
-		];
-
-		return $paths;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function formatLayoutTemplateFiles(): array {
-		if ($this->getLayout() && preg_match('#/|\\\\#', $this->getLayout())) {
-			return [$this->getLayout()];
-		}
-		[$module, $presenter] = Helpers::splitName($this->getName());
-
-		$layout = $this->getLayout() ? $this->getLayout() : strtolower($module);
-		$presenterDir = $this->getPresenterDir();
-		$list = [
-			"$presenterDir/templates/@layout.latte",
-			"$presenterDir/templates/$presenter/@layout.latte",
-		];
-		$list[] = $this->getContext()->parameters['layoutsDir'] . "/@$layout.latte";
-
-		return $list;
-	}
 
 	/**
 	 * Saves the message to template, that can be displayed after redirect.
